@@ -1,8 +1,10 @@
 <?php
 
 include ("../connect/connect.php");
-// include ("func/mkurl.php");
 include ("func/encryptFile.php");
+include ("../sign/pkencrypt.php");
+include ("../sign/sign.php");
+include ("func/urlsign.php");
 
 session_start();
 
@@ -48,31 +50,29 @@ if(isset($_POST['submit']))
         $ownerid = $_SESSION["user_id"];
         $fnew_name=hash('sha1',$name);
 
-        if (!file_exists("/tmp/"."cloud/"))
+        if (!file_exists("/var/www/html/cloud/file/$ownerid"))//待登录测试，把test1改为$ownerid
         {
-          mkdir("/tmp/"."cloud");
+          mkdir("/var/www/html/cloud/file/$ownerid");
         }
 
-        if (!file_exists("/tmp/"."cloud/$ownerid/"))//待登录测试，把test1改为$ownerid
+        if (file_exists("/var/www/html/cloud/file/$ownerid/".$fnew_name))
         {
-          mkdir("/tmp/"."cloud/$ownerid");
-        }
-
-        if (file_exists("/tmp/"."cloud/$ownerid".'/'.$fnew_name))
-        {
-          echo "<br><br><center>插入失败已上传该文件，或者文件名重复<br><br></center>";
+          echo "<br><br><center>上传失败已上传该文件，或者文件名重复<br><br></center>";
           echo "<center><a href='upload.html'>请重新上传</a></center>";
         }
         else
         {
-          $file_dest="/tmp/cloud/"."$ownerid".'/'.$fnew_name;//待登录测试，把test1改为$ownerid
+          $file_dest="/var/www/html/cloud/file/$ownerid/".$fnew_name;
           $file_dest=encryptFile($tmpfile, $key,$file_dest);
-          $keyhash=hash('md5',$key);
+          $keyhash=hash('sha256',$key);
 
-          //需用用户的私钥对文件的hash进行签名
+          //用服务器的公钥加密上传文件时用的对称密钥
+          $keyc=pkCipher($key);
+
+          //先用服务器的私钥对文件的hash进行签名，然后用用户的私钥再签名
           $fhash=hash('sha256',$databin);
           $ffhash='0x'.$fhash;
-          $fsign="fsign";
+          $fsign=sign($fhash,$ownerid,$key);
           $khash='0x'.$keyhash;
 
           $fid=mt_rand(1,100000);
@@ -84,8 +84,10 @@ if(isset($_POST['submit']))
           $flive=$_POST['times'];
           $deadtime=$_POST['deadtime'];
 
-          //对$furl数字签名验证有效性
-          $furl="https://websever/cloud/up_down/download.php?id=".$fid."&&deadtime=".$deadtime."&&livetimes=".$flive."&&uid=".$ownerid."&&file=".$ffhash;
+          //对$furl进行HMAC和数字签名验证有效性
+          $furl="https://websever.com/cloud/up_down/download.php?id=".$fid."&&deadtime=".$deadtime."&&livetimes=".$flive."&&uid=".$ownerid."&&file=".$ffhash;
+          $params=substr($furl,strpos($furl,'?'));
+          $urlsign=urlsign($params,$key);
 
           $sql = "INSERT INTO filesystem (fid,uid,fnew_name,forign_name,ftype,fsign,keyhash,fhash,fpost_time)
           VALUES (:fid,:uid,:fnew_name,:forign_name,:ftype,:fsign,:keyhash,:fhash,NOW())";
@@ -108,20 +110,20 @@ if(isset($_POST['submit']))
             // $stat->bindParam(':fid',$fid);
             // $stat->bindParam(':deadtime',$deadtime);
             // $stat->bindParam(':flive',$flive);
-            $sqldownload = "INSERT INTO download (furl,fid,deadtime,flive)VALUES (\"$furl\",$fid,\"$deadtime\",$flive)";
+            $sqldownload = "INSERT INTO download (furl,fid,deadtime,flive,urlsign,keyc)
+            VALUES (\"$furl\",$fid,\"$deadtime\",$flive,\"$urlsign\",\"$keyc\")";
             $stat=$pdo->exec($sqldownload);
 
             if(!$stmt->execute())//&&!$stat->execute()
             {
-
               // echo $sql;
-              echo "<br><br><center>".$stmt->errorInfo();
-              echo "<br><br><center>插入失败！<br><br></center>";
+              print_r($stmt->errorInfo());
+              echo "<br><br><center>上传失败！<br><br></center>";
               echo "<center><a href='upload.html'>重试</a></center>";
             }
             else
             {
-              echo "<center>插入成功！</center>";
+              echo "<center>上传成功！</center>";
               echo "文件下载地址：".$furl."<br>";
               // echo "文件临时存储的位置: " . $_FILES["file"]["tmp_name"] . "<br>";
               echo "上传文件名: " . $_FILES["file"]["name"] . "<br>";

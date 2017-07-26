@@ -9,7 +9,7 @@ define('FILE_ENCRYPTION_BLOCKS', 10000);
 
 /**
 * Encrypt the passed file and saves the result in a new file with ".enc" as suffix.
-* 
+*
 * @param string $source Path to file that should be encrypted
 * @param string $key    The key used for the encryption
 * @param string $dest   File name where the encryped file should be written to.
@@ -21,7 +21,7 @@ function encryptFile($source, $key, $dest)
     $iv = openssl_random_pseudo_bytes(16);
 
     $error = false;
-    if ($fpOut = fopen($dest, 'w')) {
+    if ($fpOut = fopen($dest, 'a')) {
         // Put the initialzation vector to the beginning of the file
         fwrite($fpOut, $iv);
         if ($fpIn = fopen($source, 'rb')) {
