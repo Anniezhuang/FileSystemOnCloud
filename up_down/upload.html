@@ -1,18 +1,13 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>云端文件系统</title>
+	<title>云端文件存储系统</title>
 </head>
-<body style="background-image:url(https://static.pexels.com/photos/399160/pexels-photo-399160.jpeg)">
+<body style="background-image:url(/photo.jpeg)">
 
 	<form action="upload.php" method="post" enctype="multipart/form-data">
-		<label for="file">文件名：</label>
+		<label for="file">上传文件：</label>
 		<input type="file" name="file" id="file"><br>
-		<label for="times">可下载次数：</label><input type="number" name="times" id="file"><br>
-		<label for="deadtime">可下载截止日期：</label><input type="date" name="deadtime"><br>
-		<label for="password">加密密码：</label>
-		<input type="password" name="password" id="pw"><br>
-		<p>提醒：超过下载次数或截止日期文件无效，如有需要应重新上传</p>
 		<input type="submit" name="submit" value="提交">
 	</form>
 

@@ -3,39 +3,64 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>没想好名字的网站</title>
+  <title>云端文件存储系统</title>
   <body>
-    <!-- <body style="background-image:url()"> -->
-    <p><?php echo"hkl";?>的下载页面</p>
     <?php
     session_start();
-    include "../connect/connect2.php";
-    $checkfile="select * from filesystem where uid=8";
-    $check=mysqli_query($p,$checkfile);
-    if(mysqli_num_rows($check)>0)
+    $name=$_SESSION['username'];echo "$name<p>的下载页面</p>";?>
+
+  <?php
+   include ("../connect/connect2.php");
+   include ("../sign/pkdecrypt.php");
+  //  include ("func/downfuc.php");
+  function downfuc($fileinfo,$key)
+  {
+    include ("decryptFile.php");
+
+    if(!file_exists("/var/www/html/cloud/download/"))
     {
-      $i=1;
-      while($i<=mysqli_num_rows($check))
-      {
-        $row=mysqli_fetch_assoc($check);
-        $name=$row["forign_name"];
-        $key=pkDecipher($row["keyc"]);
-        $path=downfuc($row,$key);
-        echo "$name\n";
-        ?>
-        <a href=$path>下载</a>
-        <?php
-        echo "<br>";
-        $i+=1;
-      }
-      echo "<center><a href='c.php'>返回主页面</a></center>";
-    }
-    else {
-      echo "还没有上传过文件";
-      echo "</center><a href='c.php'>返回主页面</a></center>";
+      mkdir("/var/www/html/cloud/download/");
     }
 
+    $source="/var/www/html/cloud/file/".$fileinfo["uid"]."/".$fileinfo["fnew_name"];
+    $dest="/var/www/html/cloud/download/".$fileinfo["forign_name"];
+    $dest=decryptFile($source, $key, $dest);
+
+    $new_url="https://websever.com/cloud/download/".$fileinfo["forign_name"];
+
+    return $new_url;
+
+  }
+   $uid=$_SESSION['user_id'];
+   $checkfile="select * from filesystem where uid=$uid";
+   $check=mysqli_query($con,$checkfile);
+   if(mysqli_num_rows($check)>0)
+   {
+    $i=1;
+    while($i<=mysqli_num_rows($check))
+    {
+
+    $row=mysqli_fetch_assoc($check);
+    $name=$row["forign_name"];
+    echo "$i\n";
+    echo "$name\n";
+   $key=pkDecipher($row["keyc"]);
+   $path=downfuc($row,$key);
     ?>
-  </body>
-</head>
-</html>
+    <a href="share.php" fid=$row["fid"] fhash=$row["fhash"] uid=$row["uid"] >分享</a>
+    <a href=$path>下载</a>
+    <?php
+    echo "<br>";
+    $i+=1;
+  }
+  //<a href='../login/c.php'>返回主页面</a>
+}
+  else {
+    echo "还没有上传过文件";
+  //  echo "<a href='c.php'>返回主页面</a>";
+  }
+
+  ?>
+ </body>
+ </head>
+ </html>

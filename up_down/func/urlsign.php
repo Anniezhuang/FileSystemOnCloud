@@ -8,5 +8,14 @@ function urlsign($ur,$key)
 
 }
 
+function downloadtime()
+{
+	$t=time();
+	$time=date("Y-m-d H:i:s",$t);
+	$randomtime=mt_srand($time);
+	$thash=hash('sha1',$randomtime);
+	$padding = array('0' =>$time,'1'=>$thash);
+	return $padding;
+}
 
  ?>

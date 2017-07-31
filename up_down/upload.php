@@ -5,6 +5,7 @@ include ("func/encryptFile.php");
 include ("../sign/pkencrypt.php");
 include ("../sign/sign.php");
 include ("func/urlsign.php");
+include ("func/randomkey.php");
 
 session_start();
 
@@ -30,7 +31,7 @@ if(isset($_POST['submit']))
   $type=$file['type']; //取得图片类型
   $size=$file['size'];  //取得图片长度
   $tmpfile=$file['tmp_name'];  //图片上传上来到临时文件的路径
-  $key = $_POST["password"];
+  $key=randomkey();
 
   if($tmpfile and is_uploaded_file($tmpfile))
   {  //判断上传文件是否为空，文件是不是上传的文件//读取图片流
@@ -57,7 +58,7 @@ if(isset($_POST['submit']))
 
         if (file_exists("/var/www/html/cloud/file/$ownerid/".$fnew_name))
         {
-          echo "<br><br><center>上传失败已上传该文件，或者文件名重复<br><br></center>";
+          echo "<br><br><center>文件名重复<br><br></center>";
           echo "<center><a href='upload.html'>请重新上传</a></center>";
         }
         else
@@ -72,7 +73,8 @@ if(isset($_POST['submit']))
           //先用服务器的私钥对文件的hash进行签名，然后用用户的私钥再签名
           $fhash=hash('sha256',$databin);
           $ffhash='0x'.$fhash;
-          $fsign=sign($fhash,$ownerid,$key);
+          //$fsign=sign($fhash,$ownerid);
+	  $fsign="fsign";
           $khash='0x'.$keyhash;
 
           $fid=mt_rand(1,100000);
@@ -81,19 +83,8 @@ if(isset($_POST['submit']))
             $fid=mt_rand(1,100000);
           }
 
-          $flive=$_POST['times'];
-          $deadtime=$_POST['deadtime'];
-
-          //对$furl进行HMAC和数字签名验证有效性
-          $furl="https://websever.com/cloud/up_down/download.php?id=".$fid."&&deadtime=".$deadtime."&&livetimes=".$flive."&&uid=".$ownerid."&&file=".$ffhash;
-          $params=substr($furl,strpos($furl,'?'));
-          $urlsign=urlsign($params,$key);
-
-          $sql = "INSERT INTO filesystem (fid,uid,fnew_name,forign_name,ftype,fsign,keyhash,fhash,fpost_time)
-          VALUES (:fid,:uid,:fnew_name,:forign_name,:ftype,:fsign,:keyhash,:fhash,NOW())";
-
-          // $sqldownload = "INSERT INTO download (furl,fid,deadtime,flive)
-          // VALUES (:furl,:fid,:deadtime,:flive)";
+          $sql = "INSERT INTO filesystem (fid,uid,fnew_name,forign_name,ftype,fsign,keyhash,fhash,fpost_time,keyc)
+          VALUES (:fid,:uid,:fnew_name,:forign_name,:ftype,:fsign,:keyhash,:fhash,NOW(),:keyc)";
 
             $stmt=$pdo->prepare($sql);
             $stmt->bindParam(':fid',$fid);
@@ -104,30 +95,19 @@ if(isset($_POST['submit']))
             $stmt->bindParam(':fsign',$fsign);
             $stmt->bindParam(':keyhash',$khash);
             $stmt->bindParam(':fhash',$ffhash);
+            $stmt->bindParam(':keyc',$keyc);
 
-            // $stat=$pdo->prepare($sqldownload);
-            // $stat->bindParam(':furl',$furl);
-            // $stat->bindParam(':fid',$fid);
-            // $stat->bindParam(':deadtime',$deadtime);
-            // $stat->bindParam(':flive',$flive);
-            $sqldownload = "INSERT INTO download (furl,fid,deadtime,flive,urlsign,keyc)
-            VALUES (\"$furl\",$fid,\"$deadtime\",$flive,\"$urlsign\",\"$keyc\")";
-            $stat=$pdo->exec($sqldownload);
-
-            if(!$stmt->execute())//&&!$stat->execute()
+            if(!$stmt->execute())
             {
               // echo $sql;
-              print_r($stmt->errorInfo());
+              //print_r($stmt->errorInfo());
               echo "<br><br><center>上传失败！<br><br></center>";
               echo "<center><a href='upload.html'>重试</a></center>";
             }
             else
             {
               echo "<center>上传成功！</center>";
-              echo "文件下载地址：".$furl."<br>";
-              // echo "文件临时存储的位置: " . $_FILES["file"]["tmp_name"] . "<br>";
               echo "上传文件名: " . $_FILES["file"]["name"] . "<br>";
-              // echo $sqldownload;
               echo "文件类型: " . $_FILES["file"]["type"] . "<br>";
               echo "文件大小: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
               echo "<center><a href='upload.html'>点此返回</a></center>";
@@ -137,9 +117,9 @@ if(isset($_POST['submit']))
       }
       else
       {
-        echo $ftype[$_FILES["file"]["type"]];
-        echo $_FILES["file"]["type"];
-        echo "<center>请选择图片或文档！<br><br><a href='upload.html'>点此返回</a></center>";
+        //echo $ftype[$_FILES["file"]["type"]];
+        //echo $_FILES["file"]["type"];
+        echo "<center>no login！<br><br><a href='upload.html'>点此返回</a></center>";
       }
     }
     else

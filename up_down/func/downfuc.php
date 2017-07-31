@@ -44,6 +44,7 @@ function downfileinfo($fileinfo)
   $filesign=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."sign","a+");
 
   fwrite($filehash, $fileinfo["fhash"]);
+  fwrite($filehash, $fileinfo["uid"]);
   fwrite($filesign,$fileinfo["fsign"]);
 
   fclose($filehash);
@@ -53,8 +54,8 @@ function downfileinfo($fileinfo)
 
 }
 
-function deletefile($filename)
-{
-  $path="/var/www/html/cloud/download/$filename";
-  unlink($path);
-}
+// function deletefile($filename)
+// {
+//   $path="/var/www/html/cloud/download/$filename";
+//   unlink($path);
+// }

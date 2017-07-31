@@ -1,8 +1,4 @@
 <?php
 // PDO + MySQL
-$hostname="";
-$dbname="";
-$password="";
-$username="";
 
-$pdo = new PDO('mysql:host=$hostname;dbname=$dbname, $username, $password');
+$pdo = new PDO('mysql:host=websever.com;dbname=websever', 'root', 'sunshine');

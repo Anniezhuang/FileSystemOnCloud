@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>验证数字签名</title>
+        <style>
+            fieldset {
+                width: 300px;
+                height: 200px;
+                margin: 0 auto;
+            }
+            #placeholder{
+                position: relative;
+                top:100px;
+                left:200px;
+            }
+        </style>
+    </head>
+
+    <body style="background-image:url(https://static.pexels.com/photos/399160/pexels-photo-399160.jpeg)">
+
+    <fieldset>
+
+    <div>
+        <form action="verify.php" method="post" enctype="multipart/form-data">
+        <label for="text">上传验证文件</label><br>
+        <input type="file" name="file"><br>
+        <label for="text">上传签名</label><br>
+        <input type="file" name="signature"><br><br><br>
+        <input type="submit" name="submit" value="验证" />
+        </form>
+    </div>
+    </fieldset>
+    </body>
+
+</html>

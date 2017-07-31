@@ -8,6 +8,7 @@
 * @param string $dest   File name where the decryped file should be written to.
 * @return string|false  Returns the file name that has been created or FALSE if an error occured
 */
+define('FILE_ENCRYPTION_BLOCKS', 10000);
 function decryptFile($source, $key, $dest)
 {
     $key = substr(sha1($key, true), 0, 16);
