@@ -13,11 +13,9 @@ $ftype=array("image/gif"=>"gif",
 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"=>"xlsx",
 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"=>"docx",
 "application/vnd.ms-excel"=>"xls");
-
+include ("decryptFile.php");
 function downfuc($fileinfo,$key)
 {
-  include ("decryptFile.php");
-
   if(!file_exists("/var/www/html/cloud/download/"))
   {
     mkdir("/var/www/html/cloud/download/");
@@ -40,8 +38,8 @@ function downfileinfo($fileinfo)
     mkdir("/var/www/html/cloud/download");
   }
 
-  $filehash=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."hash","a+");
-  $filesign=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."sign","a+");
+  $filehash=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."hash.txt","a+");
+  $filesign=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."sign.txt","a+");
 
   fwrite($filehash, $fileinfo["fhash"]);
   fwrite($filehash, $fileinfo["uid"]);
@@ -50,7 +48,8 @@ function downfileinfo($fileinfo)
   fclose($filehash);
   fclose($filesign);
 
-  $path = array('0'=>"https://websever.com/cloud/download/".$fileinfo["fnew_name"]."sign",'1' =>"https://websever.com/cloud/download/".$fileinfo["fnew_name"]."hash");
+  $path = array('0'=>"https://websever.com/cloud/download/".$fileinfo["fnew_name"]."sign.txt",'1' =>"https://websever.com/cloud/download/".$fileinfo["fnew_name"]."hash.txt");
+  return $path;
 
 }
 

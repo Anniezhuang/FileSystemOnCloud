@@ -2,7 +2,7 @@
 function pkCipher($plaintext){
   //用服务器公钥加密$plaintext
   $method="aes-256-cbc";
-  $enc_key=bin2hex(openssl_pkey_get_public('server.crt'));
+  $enc_key=bin2hex(openssl_pkey_get_public('../publickey'));
   $enc_options=0;
   $iv_length=openssl_cipher_iv_length($method);
   $iv=openssl_random_pseudo_bytes($iv_length);
@@ -15,7 +15,7 @@ function pkCipher($plaintext){
 
 function pkDecipher($ciphertext){
   //用服务器公钥解密$plaintext
-  $enc_key=bin2hex(openssl_pkey_get_public('server.crt'));
+  $enc_key=bin2hex(openssl_pkey_get_public('../publickey'));
   list($extracted_method, $extracted_enc_options, $extracted_iv, $extracted_ciphertext) = explode('$', $ciphertext);
   $plaintext = openssl_decrypt($extracted_ciphertext, $extracted_method, $enc_key, $extracted_enc_options, hex2bin($extracted_iv));
   return $plaintext;

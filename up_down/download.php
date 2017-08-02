@@ -14,41 +14,43 @@ include ("../connect/connect2.php");
 <body>
 <form action="" method="post" >
 	<?php
-	//echo $_SERVER["REQUEST_URI"];
 	$url=$_SERVER["REQUEST_URI"];
-	// $params=substr($url,strpos($url,'?'));
+  $url=urldecode($url);
+	$params=substr($url,strpos($url,'?'));
+  // echo $params;
 	// echo $params;
 	?>
 	<br>
   <br>
 	<?php
-	$splt=explode("&&",$url);
-	$fid=explode("=",$splt[0][1]);
-	$curl="SELECT * from filesystem where fid=$fid limit 1";
-	$cc=mysqli_connect($con,$curl);
-	$r=mysqli_fetch_assoc($cc);
-	$out=urlsign($params,pkDecipher($r["keyc"]));
 
-  $checkurl = "SELECT urlsign FROM download where fid=$fid ";
-	$result=mysqli_query($con,$checkurl);
+	$fid=$_GET["id"];
+  $r=mysqli_fetch_object(mysqli_query($con,"SELECT keyc from filesystem where fid=$fid limit 1"));
+  $keyc=$r->keyc;
+	$urlverify=urlsign($params,pkDecipher($keyc));
+  // echo pkDecipher($keyc)."<br>";
+  // echo "urlsign=$urlverify<br>";
+
+	$result=mysqli_query($con,"SELECT urlsign FROM download where fid=$fid ");
+
   if(mysqli_num_rows($result)>0)
 	{
 		$row=mysqli_fetch_assoc($result);
-		$u=$row["urlsign"];
-		if($u==$out)
+		$urlsign=$row["urlsign"];
+    // echo "urlsign=$urlsign<br>";
+		if($urlsign==$urlverify)
 		{
-			$c="select * from filesystem where fid=$fid";
-			$up=mysqli_query($con,$c);
-		  $res=mysqli_fetch_assoc($up);
-			$t=time();
-			$ti=date("Y-m-d H:i:s",$t);
+		  $res=mysqli_fetch_assoc(mysqli_query($con,"select * from filesystem where fid=$fid"));
 
-			$rule=$res['fpost_time']+3600*24;
-		  if($ti<$rule)
+      $restime=mysqli_fetch_assoc(mysqli_query($con,"select * from download where fid=$fid"));
+      $time=date("Y-m-d H:i:s",time());
+			$checktime=$restime['urlpost_time']+3600*24;
+		  if($time<$checktime)
 			  {
-					$pass=pkDecipher($r["keyc"]);
+					$pass=pkDecipher($keyc);
 					$path1=downfuc($res,$pass);
 					$path=downfileinfo($res);
+
 					echo "<center>文件名：".$res["forign_name"]."</center><br>";
 					echo "<center><a href=$path1>文件</a></center><br>";
 					echo "<center><a href=$path[0]>文件签名</a></center><br>";

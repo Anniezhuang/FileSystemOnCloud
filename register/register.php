@@ -3,7 +3,8 @@
 function pkCipher($plaintext){
   include ("../connect/connect.php");
   $method="aes-256-cbc";
-  $enc_key=bin2hex(openssl_pkey_get_private(file_get_contents('./server.key')));
+  // $enc_key=bin2hex(openssl_pkey_get_private(file_get_contents('../privatekey')));
+  $enc_key=bin2hex(file_get_contents('../privatekey'));
   $enc_options=0;
   $iv_length=openssl_cipher_iv_length($method);
   $iv=openssl_random_pseudo_bytes($iv_length);
@@ -46,7 +47,7 @@ function insert($sk,$pk){
     $saltedPsw=hash("sha256",($psw.$salt));
 
     //连接数据库
-	include ("../connect/connect.php");
+    include ("../connect/connect.php");
 
     //插入一条新的记录
   	$sql="Insert into user(name,email,username,psw,pubkey,privkey,salt) values (:name,:email,:usr,:saltedPsw,:pk,:sk,:salt)";

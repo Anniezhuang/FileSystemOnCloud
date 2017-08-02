@@ -119,7 +119,7 @@ if(isset($_POST['submit']))
       {
         //echo $ftype[$_FILES["file"]["type"]];
         //echo $_FILES["file"]["type"];
-        echo "<center>no login！<br><br><a href='upload.html'>点此返回</a></center>";
+        echo "<center>错误提示：未登录或文件类型出错！<br><br><a href='upload.html'>点此返回</a></center>";
       }
     }
     else
