@@ -23,14 +23,11 @@ if(mysqli_num_rows($result)>0)
       $test=hash("sha256",($password.$salt));
       if($hash==$test)
       {
-        echo "\n恭喜成功登录，".$row["username"];
-        //  $_SESSION['user_id']=$row['uid'];
-        //  $_SESSION['username']=$row['username'];
-
-        //  setcookie('user_id',$row['uid'],time()+3600);
-        //  setcookie('username',$row['username'],time()+3600);
-        //  echo $_COOKIE["user_id"]."and".$_COOKIE["username"];
-        include ("loginsuccess.php");
+        // echo "\n恭喜成功登录，".$row["username"];
+        session_start();
+        $_SESSION['user_id']=$row['uid'];
+        $_SESSION['username']=$row['username'];
+        header('Location: https://websever.com/cloud/index/index.php');
         exit;
       }
       else

@@ -25,7 +25,7 @@ function downfuc($fileinfo,$key)
   $dest="/var/www/html/cloud/download/".$fileinfo["forign_name"];
   $dest=decryptFile($source, $key, $dest);
 
-  $new_url="https://websever.com/cloud/download/".$fileinfo["forign_name"];
+  $new_url="downloadfile.php?file=".$fileinfo["forign_name"];
 
   return $new_url;
 
@@ -38,8 +38,8 @@ function downfileinfo($fileinfo)
     mkdir("/var/www/html/cloud/download");
   }
 
-  $filehash=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."hash.txt","a+");
-  $filesign=fopen("/var/www/html/cloud/download/".$fileinfo["fnew_name"]."sign.txt","a+");
+  $filehash=fopen("/var/www/html/cloud/download/hash".$fileinfo["fid"].".txt","a+");
+  $filesign=fopen("/var/www/html/cloud/download/sign".$fileinfo["fid"].".txt","a+");
 
   fwrite($filehash, $fileinfo["fhash"]);
   fwrite($filehash, $fileinfo["uid"]);
@@ -48,10 +48,13 @@ function downfileinfo($fileinfo)
   fclose($filehash);
   fclose($filesign);
 
-  $path = array('0'=>"https://websever.com/cloud/download/".$fileinfo["fnew_name"]."sign.txt",'1' =>"https://websever.com/cloud/download/".$fileinfo["fnew_name"]."hash.txt");
+  $path = array('0'=>"downloadfile.php?file=sign".$fileinfo["fid"].".txt",'1' =>"downloadfile.php?file=hash".$fileinfo["fid"].".txt");
+
   return $path;
 
 }
+
+
 
 // function deletefile($filename)
 // {

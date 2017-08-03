@@ -17,8 +17,6 @@ include ("../connect/connect2.php");
 	$url=$_SERVER["REQUEST_URI"];
   $url=urldecode($url);
 	$params=substr($url,strpos($url,'?'));
-  // echo $params;
-	// echo $params;
 	?>
 	<br>
   <br>
@@ -52,26 +50,26 @@ include ("../connect/connect2.php");
 					$path=downfileinfo($res);
 
 					echo "<center>文件名：".$res["forign_name"]."</center><br>";
-					echo "<center><a href=$path1>文件</a></center><br>";
+					echo "<center><a href=$path1>下载文件</a></center><br>";
 					echo "<center><a href=$path[0]>文件签名</a></center><br>";
 					echo "<center><a href=$path[1]>文件散列值</a></center><br>";
 
 			?>
-			<input type="submit" name="submit" value="提交">
+			<!-- <input type="submit" name="submit" value="提交"> -->
 		<?php }
 		else{
-			echo "已过期";?>
-			<a href="../login/c.php">返回主页</a>
+			echo "链接已过期";?>
+			<a href="../index/index.php">返回主页</a>
 	<?php 	}
 
 	}else {
 		echo "url有误";
 
 		?>
-		<a href="../login/c.php">返回主页</a>
+		<a href="../index/index.php">返回主页</a>
 		<?php }
 	}else{
-		?><a href="download.php">重新输入</a>
+		?><a href="download.php">请输入正确的url到地址栏中</a>
 	<?php } ?>
 		<br>
 		<!-- <input type="submit" name="submit" value="提交"> -->
