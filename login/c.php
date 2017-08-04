@@ -47,12 +47,11 @@ background-color:#FFC125;}
         </div>
         <ul>
         <li><a href="../register/register.php" style="color:white;font-size:20px">注册</a>
-
         <br>
         <li><a href="../up_down/download.php" style="color:white;font-size:20px">下载</a>
         <br>
         <br>
-        <li><a href="../sign/verify.php" style="color:white;font-size:20px">验证签名</a><br>
+        <li><a href="../sign/verify.html" style="color:white;font-size:20px">验证签名</a><br>
          <div id="footer" style="clear:both;text-align:center;color:#EEB422">
           出品：黄连庄</div>
         </div>

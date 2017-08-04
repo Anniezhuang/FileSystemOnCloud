@@ -5,10 +5,10 @@ include ("../sign/pkdecrypt.php");
 include ("func/downfuc.php");
 session_start();
 
-if(isset($_SESSION["user_id"])){
-  $fid=$_GET["fid"];
-  $ownerid=$_GET["uid"];
-  $ffhash=$_GET["fhash"];
+$fid=$_GET["fid"];
+$ownerid=$_GET["uid"];
+$ffhash=$_GET["fhash"];
+if(isset($_SESSION["user_id"])&&$ownerid==$_SESSION["user_id"]){
 
   $time=downloadtime();
 

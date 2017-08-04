@@ -22,9 +22,11 @@
 
     <div>
         <form action="verify.php" method="post" enctype="multipart/form-data">
-        <label for="text">上传验证文件</label><br>
+        <label for="text">上传待验证文件</label><br>
         <input type="file" name="file"><br>
-        <label for="text">上传签名</label><br>
+        <label for="text">上传文件哈希值</label><br>
+        <input type="file" name="file"><br>
+        <label for="text">上传文件的签名</label><br>
         <input type="file" name="signature"><br><br><br>
         <input type="submit" name="submit" value="验证" />
         </form>

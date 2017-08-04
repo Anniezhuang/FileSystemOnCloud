@@ -24,23 +24,77 @@ $ftype=array("image/gif"=>"gif",
 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"=>"docx",
 "application/vnd.ms-excel"=>"xls");
 
+function rebuild($tmpfile,$name)
+{
+  if(substr(strrchr($name,"."),1)=="bmp")
+  {
+    try {
+      $im=imagecreatefromwbmp($tmpfile);
+      imagewbmp($im, $tmpfile);
+      imagedestroy($im);
+
+    } catch (Error $e) {
+      echo "<center>文件类型出错</center>";
+      echo "<center><a href='../index/index.php'>点此返回</a></center>";
+    }
+
+  }
+  if(substr(strrchr($name,"."),1)=="png")
+  {
+    try {
+      $im = imagecreatefrompng($tmpfile);
+      imagepng($im, $tmpfile);
+      imagedestroy($im);
+    } catch (Error $e) {
+      echo "<center>文件类型出错</center>";
+      echo "<center><a href='../index/index.php'>点此返回</a></center>";
+    }
+  }
+  if(substr(strrchr($name,"."),1)=="jpeg"||substr(strrchr($name,"."),1)=="jpg")
+  {
+    try {
+      $im=imagecreatefromjpeg($tmpfile);
+      imagejpeg($im, $tmpfile);
+      imagedestroy($im);
+    } catch (Error $e) {
+      echo "<center>文件类型出错</center>";
+      echo "<center><a href='../index/index.php'>点此返回</a></center>";
+      echo $e->getMessage();
+    }
+
+  }
+  if(substr(strrchr($name,"."),1)=="gif")
+  {
+    try {
+      $im = imagecreatefromgif($tmpfile);
+      imagegif($im, $tmpfile);
+      imagedestroy($im);
+    } catch (Error $e) {
+      echo "<center>文件类型出错</center>";
+      echo "<center><a href='../index/index.php'>点此返回</a></center>";
+    }
+  }
+}
+
 if(isset($_POST['submit']))
 {
   $file=$_FILES['file'];
-  $name=$file['name'];  //取得图片名称
-  $type=$file['type']; //取得图片类型
-  $size=$file['size'];  //取得图片长度
-  $tmpfile=$file['tmp_name'];  //图片上传上来到临时文件的路径
+  $name=$file['name'];  //取得文件名称
+  $type=$file['type']; //取得文件类型
+  $size=$file['size'];  //取得文件长度
+  $tmpfile=$file['tmp_name'];  //文件上传上来到临时文件的路径
   $key=randomkey();
 
-  if($tmpfile and is_uploaded_file($tmpfile))
-  {  //判断上传文件是否为空，文件是不是上传的文件//读取图片流
+  if($tmpfile and is_uploaded_file($tmpfile))//判断上传文件是否为空，文件是不是上传的文件
+  {
     $filetem=fopen($tmpfile,"rb");
     $databin=fread($filetem,$size);
     fclose($filetem);
 
-    if (isset($ftype[$_FILES["file"]["type"]])
-    && ($_FILES["file"]["size"] < 10000000) && isset($_SESSION["user_id"]))  // 小于 10MB
+    // 判断文件类型，文件后缀名准确性，是否登录，是否小于 10MB
+    if (isset($ftype[$type])
+    && ($size < 10000000) && isset($_SESSION["user_id"])
+    &&($ftype[$type]==substr(strrchr($name,"."),1)||($ftype[$type]=="jpeg"&&substr(strrchr($name,"."),1)=="jpg")))
     {
       if ($_FILES["file"]["error"] > 0)
       {
@@ -51,7 +105,7 @@ if(isset($_POST['submit']))
         $ownerid = $_SESSION["user_id"];
         $fnew_name=hash('sha1',$name);
 
-        if (!file_exists("/var/www/html/cloud/file/$ownerid"))//待登录测试，把test1改为$ownerid
+        if (!file_exists("/var/www/html/cloud/file/$ownerid"))
         {
           mkdir("/var/www/html/cloud/file/$ownerid");
         }
@@ -64,6 +118,7 @@ if(isset($_POST['submit']))
         else
         {
           $file_dest="/var/www/html/cloud/file/$ownerid/".$fnew_name;
+          rebuild($tmpfile,$name);
           $file_dest=encryptFile($tmpfile, $key,$file_dest);
           $keyhash=hash('sha256',$key);
 
@@ -72,9 +127,7 @@ if(isset($_POST['submit']))
 
           //先用服务器的私钥对文件的hash进行签名，然后用用户的私钥再签名
           $fhash=hash('sha256',$databin);
-          $ffhash='0x'.$fhash;
           $fsign=sign($fhash,$ownerid);
-          $khash='0x'.$keyhash;
 
           $fid=mt_rand(1,100000);
           while(($pdo->query("select * from filesystem where $fid=fid"))->rowCount()!=0)
@@ -92,8 +145,8 @@ if(isset($_POST['submit']))
           $stmt->bindParam(':forign_name',$name);
           $stmt->bindParam(':ftype',$type);
           $stmt->bindParam(':fsign',$fsign);
-          $stmt->bindParam(':keyhash',$khash);
-          $stmt->bindParam(':fhash',$ffhash);
+          $stmt->bindParam(':keyhash',$keyhash);
+          $stmt->bindParam(':fhash',$fhash);
           $stmt->bindParam(':keyc',$keyc);
 
           if(!$stmt->execute())
@@ -116,8 +169,8 @@ if(isset($_POST['submit']))
     }
     else
     {
-      //echo $ftype[$_FILES["file"]["type"]];
-      //echo $_FILES["file"]["type"];
+      echo $ftype[$_FILES["file"]["type"]];
+      echo $_FILES["file"]["type"];
       echo "<center>错误提示：未登录或文件类型出错！<br><br><a href='../index/index.php'>点此返回</a></center>";
     }
   }

@@ -11,7 +11,7 @@ function pkCipher($plaintext){
   //encrypt user private key and user public key
   $c=openssl_encrypt($plaintext,$method,$enc_key,$enc_options,$iv);
   // 定义“私有”的密文结构
-  $saved_c = sprintf('%s$%d$%s$%s', $method, $enc_options, bin2hex($iv), $c);
+  $saved_c = sprintf('%s@%d@%s@%s', $method, $enc_options, bin2hex($iv), $c);
   return $saved_c;
 }
 

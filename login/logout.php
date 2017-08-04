@@ -1,9 +1,13 @@
-
+<?php
+unset ($_SESSION['username']);
+unset ($_SESSION['user_id']);
+unset($_SESSION);
+session_unset();
+session_destroy();
+echo "是否删除cookie\n\n";
+?>
 <html>
 <body>
-  <?php
-  echo "是否删除cookie\n\n";
-  ?>
 <tr>
 
    <td>
@@ -16,12 +20,6 @@
      </form>
    </td>
 </tr>
-<?php   if(isset($_POSt['delete']))
-{
 
-  // setcookie('user_id',' ',time()-3600);
-  // setcookie('username',' ',time()-3600);
-  session_destroy ();
-}?>
 </body>
 </html>
