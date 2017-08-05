@@ -5,8 +5,6 @@
 * So if we read 10,000 blocks we load 160kb into memory. You may adjust this value
 * to read/write shorter or longer chunks.
 */
-define('FILE_ENCRYPTION_BLOCKS', 10000);
-
 /**
 * Encrypt the passed file and saves the result in a new file with ".enc" as suffix.
 *
@@ -15,6 +13,7 @@ define('FILE_ENCRYPTION_BLOCKS', 10000);
 * @param string $dest   File name where the encryped file should be written to.
 * @return string|false  Returns the file name that has been created or FALSE if an error occured
 */
+define('FILE_ENCRYPTION_BLOCKS', 10000);
 function encryptFile($source, $key, $dest)
 {
     $key = substr(sha1($key, true), 0, 16);

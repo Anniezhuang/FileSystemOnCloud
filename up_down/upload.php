@@ -24,6 +24,7 @@ $ftype=array("image/gif"=>"gif",
 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"=>"docx",
 "application/vnd.ms-excel"=>"xls");
 
+//重新生成图片
 function rebuild($tmpfile,$name)
 {
   if(substr(strrchr($name,"."),1)=="bmp")
