@@ -1,31 +1,33 @@
 # <center>云端文件存储系统的关键技术</center> #
 <br>
+
 ## 1. 判断密码强度 ##
 	//检查密码强度
-	function filterPsw($field){
-	    $strength=0;    //表示密码强度
-	    $length = strlen($field);    //密码长度
-	    //长度小于7，直接判定为弱口令
-	    if($length<7) return $strength;
-	    if($length >= 8 && $length <= 15) $strength += 10;
-	    if($length >= 16 && $length <=36) $strength += 20;
-	    // 判断是否全为大写字母或全为小写字母
-	    if(strtolower($field) != $field or strtoupper($field) != $field)    $strength += 10;
-		// get the numbers in the password
-	    preg_match_all('/[0-9]/', $field, $numbers);
-	    $strength += count($numbers[0]);
-		/*** check for special chars ***/
-	    preg_match_all('[|!@#$%&*//=?,;.:-_+~^]', $field, $specialchars);
-	    $strength += sizeof($specialchars[0]);
-		/*** get the number of unique chars ***/
-	    $chars = str_split($field);  //str_split change string to array
-	    $num_unique_chars = sizeof( array_unique($chars) );  //remove duplicate values from an array
-	    $strength += $num_unique_chars * 2;
-		/*** strength is a number 1-10; ***/
-	    $strength = $strength > 99 ? 99 : $strength;
-	    $strength = floor($strength / 10 + 1);
+	function filterPsw($field)
+	{
+	  $strength=0;    //表示密码强度
+	  $length = strlen($field);    //密码长度
+	  //长度小于7，直接判定为弱口令
+	  if($length<7) return $strength;
+	  if($length >= 8 && $length <= 15) $strength += 10;
+	  if($length >= 16 && $length <=36) $strength += 20;
+	  // 判断是否全为大写字母或全为小写字母
+	  if(strtolower($field) != $field or strtoupper($field) != $field)    $strength += 10;
+	  // get the numbers in the password
+	  preg_match_all('/[0-9]/', $field, $numbers);
+	  $strength += count($numbers[0]);
+	  /*** check for special chars ***/
+	  preg_match_all('[|!@#$%&*//=?,;.:-_+~^]', $field, $specialchars);
+	  $strength += sizeof($specialchars[0]);
+	  /*** get the number of unique chars ***/
+	  $chars = str_split($field);  //str_split change string to array
+	  $num_unique_chars = sizeof( array_unique($chars) );  //remove duplicate values from an array
+	  $strength += $num_unique_chars * 2;
+	  /*** strength is a number 1-10; ***/
+	  $strength = $strength > 99 ? 99 : $strength;
+	  $strength = floor($strength / 10 + 1);
 	
-	    return $strength;
+	  return $strength;
 	}
 ## 2. 生成用户公私钥 ##
 	function genKeys(){
