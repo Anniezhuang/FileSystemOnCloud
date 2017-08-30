@@ -216,7 +216,7 @@
 
 ## 10. 使用服务器的公钥对文件上传的随机对称密钥加密 ##
 - 生成随机密钥，文件使用该密钥进行对称加密，只存储文件密文
-```
+```php
 		function randomkey($length=8)
 		{
 			$key="";
@@ -251,7 +251,7 @@
 			openssl_private_decrypt(base64_decode($encrypted),$decrypted,$pi_key);
 			return $decrypted;
 		}
-		```
+```
 ## 12. 使用用户的私钥对文件的哈希值签名 ##
 - 首先使用服务器的私钥作为对称密钥，解密用户的私钥
 ```php
