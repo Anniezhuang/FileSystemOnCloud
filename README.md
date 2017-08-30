@@ -2,7 +2,7 @@
 <br>
 
 ## 1. 判断密码强度 ##
-	'''php
+	```php
 	//检查密码强度
 	function filterPsw($field)
 	{
@@ -30,7 +30,9 @@
 	
 	  return $strength;
 	}
+	```
 ## 2. 生成用户公私钥 ##
+	```php
 	function genKeys(){
 	    $config=array(
 	      "digest_alg"=>"sha256",
@@ -44,12 +46,13 @@
 	    $keys=array("SK"=>$privKey,"PK"=>$pubKey);
 	    return $keys;
 	}
+	```
 ## 3. 生成服务器的公私钥 ##
 - 原来是使用自签发的server.key和server.crt作为服务器的公私钥，但考虑到证书有效期一般为5年，不可能5年后重新对所有文件的对称密钥重新加解密，于是生成服务器的公私钥
 - 需要保证服务器公私钥的绝对安全
 ## 4. 用户公私钥的安全存储 ##
 - 服务器的私钥作为对称密钥，对用户的公私钥加密，然后把用户的公私钥存到数据库中
-
+```php
 		function pkCipher($plaintext){
 		  include ("../connect/connect.php");
 		  $method="aes-256-cbc";
@@ -63,11 +66,13 @@
 		  $saved_c = sprintf('%s@%d@%s@%s', $method, $enc_options, bin2hex($iv), $c);
 		  return $saved_c;
 		}
-		'''
+		```
 ## 5. 存储用户登录密码 ##
+    ```php
     //密码加盐
     $salt=openssl_random_pseudo_bytes(1024);
     $saltedPsw=hash("sha256",($psw.$salt));
+    ```
 ## 6. 判断用户登录状态 ##
 	session_start();
 	$_SESSION['user_id']=$row['uid'];
