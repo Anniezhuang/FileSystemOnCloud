@@ -78,7 +78,7 @@
 	session_start();
 	$_SESSION['user_id']=$row['uid'];
 	$_SESSION['username']=$row['username'];
-	```
+```
 ## 7. 文件上传判断 ##
 - 具体在upload.php
 - 文件需小于10MB
@@ -310,7 +310,7 @@
 	$stmt->bindParam(':keyhash',$keyhash);
 	$stmt->bindParam(':fhash',$fhash);
 	$stmt->bindParam(':keyc',$keyc);
-	```
+```
 ## 16. 数据库展示 ##
 - download表
 ![](https://github.com/kjAnny/FileSystemOnCloud/blob/master/db_table/download%E8%A1%A8.JPG?raw=true)
