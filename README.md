@@ -2,6 +2,7 @@
 <br>
 
 ## 1. 判断密码强度 ##
+	'''php
 	//检查密码强度
 	function filterPsw($field)
 	{
@@ -62,6 +63,7 @@
 		  $saved_c = sprintf('%s@%d@%s@%s', $method, $enc_options, bin2hex($iv), $c);
 		  return $saved_c;
 		}
+		'''
 ## 5. 存储用户登录密码 ##
     //密码加盐
     $salt=openssl_random_pseudo_bytes(1024);
